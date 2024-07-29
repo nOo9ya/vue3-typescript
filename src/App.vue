@@ -4,6 +4,7 @@ import TheWelcome from "@/components/TheWelcome.vue";
 import JobsList from '@/components/JobsList.vue';
 import { defineComponent, reactive, ref, toRefs } from "vue";
 import { Job } from "./types/job";
+import type OrderTerm from "@/types/OrderTerm";
 
 export default defineComponent({
   name: "App",
@@ -52,7 +53,13 @@ export default defineComponent({
       },
     ]);
 
-    return { jobs };
+    const order = ref<OrderTerm>('title');
+
+    const handleClick = (termType: OrderTerm) => {
+      order.value = termType;
+    }
+
+    return { jobs, handleClick, order };
   },
   methods: {
     //
@@ -76,7 +83,10 @@ export default defineComponent({
   </header>
 
   <main>
-    <JobsList :jobs="jobs" />
+    <button @click="handleClick('title')">order by title</button>
+    <button @click="handleClick('location')">order by location</button>
+    <button @click="handleClick('salary')">order by salary</button>
+    <JobsList :jobs="jobs" :order="order" />
     <TheWelcome />
   </main>
 </template>

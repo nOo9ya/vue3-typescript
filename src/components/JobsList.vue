@@ -9,23 +9,39 @@
 //   }
 // })
 
-import {defineComponent, PropType} from 'vue';
+import {computed, defineComponent, PropType} from 'vue';
 import type {Job} from "@/types/job";
+import type OrderTerm from "@/types/OrderTerm";
 
 export default defineComponent({
   props: {
     jobs: {
       required: true,
       type: Array as PropType<Job[]>
+    },
+    order: {
+      required: true,
+      type: String as PropType<OrderTerm>
     }
+  },
+  setup(props) {
+    const orderedJobs = computed(() => {
+      return [...props.jobs].sort((a: Job, b: Job) => {
+        // 오름차순
+        return a[props.order] > b[props.order] ? 1 : -1;
+      });
+    });
+
+    return { orderedJobs };
   }
 });
 </script>
 
 <template>
   <div class="job-list">
-    <ul>
-      <li v-for="job in jobs" :key="job.id">
+    <p>Ordered by {{ order }}</p>
+    <transition-group name="list" tag="ul">
+      <li v-for="job in orderedJobs" :key="job.id">
         <h2>{{ job.title }} in {{ job.location }}</h2>
         <div class="salary">
           <p>{{ job.salary }} won</p>
@@ -34,7 +50,7 @@ export default defineComponent({
           <p>{{ job.location }}</p>
         </div>
       </li>
-    </ul>
+    </transition-group>
   </div>
 </template>
 
